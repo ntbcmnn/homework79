@@ -8,7 +8,7 @@ const categoriesRouter = express.Router();
 categoriesRouter.get('/', async (req, res, next) => {
     try {
         const connection = await mysqlDb.getConnection();
-        const [result] = await connection.query('SELECT * from categories');
+        const [result] = await connection.query('SELECT id, name from categories');
         const categories = result as Category[];
 
         res.send(categories);
@@ -43,20 +43,20 @@ categoriesRouter.get('/:id', async (req, res, next) => {
 });
 
 categoriesRouter.post('/', async (req, res, next) => {
-    if (!req.body.title) {
-        res.status(400).send({error: "Please set a title, it's required."});
+    if (!req.body.name) {
+        res.status(400).send({error: "Please set a name, it's required."});
         return;
     }
 
     const category: CategoryMutation = {
-        title: req.body.title,
+        name: req.body.name,
         description: req.body.description,
     };
 
     try {
         const connection = await mysqlDb.getConnection();
 
-        const [result] = await connection.query('INSERT INTO categories (title, description) VALUES (?, ?)', [category.title, category.description]);
+        const [result] = await connection.query('INSERT INTO categories (name, description) VALUES (?, ?)', [category.name, category.description]);
         const resultHeader = result as ResultSetHeader;
 
         const [resultCategory] = await connection.query('SELECT * FROM categories WHERE id = ?', [resultHeader.insertId]);
@@ -116,8 +116,8 @@ categoriesRouter.put('/:id', async (req, res, next) => {
     }
 
     try {
-        if (!req.body.title) {
-            res.status(400).send({error: "Set the title, it's required."});
+        if (!req.body.name) {
+            res.status(400).send({error: "Set the name, it's required."});
             return;
         }
 
@@ -130,7 +130,7 @@ categoriesRouter.put('/:id', async (req, res, next) => {
             res.status(404).send({error: "Category Not Found"});
             return;
         } else {
-            await connection.query('UPDATE categories SET title = ?, description = ? WHERE id = ?', [req.body.title, req.body.description, id]);
+            await connection.query('UPDATE categories SET name = ?, description = ? WHERE id = ?', [req.body.name, req.body.description, id]);
         }
 
         const [updatedCategory] = await connection.query('SELECT * FROM categories WHERE id = ?', [id]);
