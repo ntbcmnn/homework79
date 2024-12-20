@@ -8,7 +8,7 @@ const placesRouter = express.Router();
 placesRouter.get('/', async (req, res, next) => {
     try {
         const connection = await mysqlDb.getConnection();
-        const [result] = await connection.query('SELECT * from places');
+        const [result] = await connection.query('SELECT id, name from places');
         const places = result as Place[];
 
         res.send(places);
