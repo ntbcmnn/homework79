@@ -9,7 +9,7 @@ const itemsRouter = express.Router();
 itemsRouter.get('/', async (req, res, next) => {
     try {
         const connection = await mysqlDb.getConnection();
-        const [result] = await connection.query('SELECT id, name from items');
+        const [result] = await connection.query('SELECT id, category_id, place_id, name from items');
         const items = result as Item[];
 
         res.send(items);
